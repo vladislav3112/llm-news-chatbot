@@ -1,0 +1,6 @@
+local_qdrant/*
+.vscode
+*.zip
+data
+models
+*.csv
