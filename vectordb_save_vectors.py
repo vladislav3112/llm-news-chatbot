@@ -1,17 +1,16 @@
-from langchain_community.vectorstores import Qdrant
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+import pandas as pd
 from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
-import pandas as pd
+from langchain_community.vectorstores import Qdrant
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
 
-# setting if device free RAM <= 16 GB (but >= 8GB)
+# setting if device free RAM ~ 16 GB
 LOW_MEMORY = True
-
+df = pd.read_csv("data/processed_news.csv")
 if LOW_MEMORY:
-    df = pd.read_csv("data/processed_news.csv").sample(frac=0.2, random_state=0)
-else:
-    df = pd.read_csv("data/processed_news.csv")
+    df["date"] = pd.to_datetime(df["date"])
+    df = df[df.date.dt.year >= 2012]
 
 documents = []
 
@@ -31,6 +30,6 @@ embeddings = HuggingFaceEmbeddings(model_name="cointegrated/rubert-tiny2")
 vectorstore = Qdrant.from_documents(
     documents=splits,
     embedding=embeddings,  # LlamaCppEmbeddings(model_path=LLM_MODEL_PATH),
-    path="/local_qdrant_rubert",
+    path="./local_qdrant_rubert_from_2012",
     collection_name="my_news_collection",
 )

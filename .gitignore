@@ -4,3 +4,4 @@ local_qdrant/*
 data
 models
 *.csv
+local_qdrant_rubert_from_2012/*
