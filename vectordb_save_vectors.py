@@ -46,7 +46,7 @@ def save_data_to_vectordb(
             path=db_save_path,
             collection_name="my_news_collection",
         )
-        print("Информация успешно сохранена в базу данных по пути {db_path}")
+        print(f"Информация успешно сохранена в базу данных по пути {db_save_path}")
     except MemoryError:
         print("Недостаточно памяти! Освободите RAM или поставьте low_memory=True")
 

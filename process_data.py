@@ -21,6 +21,7 @@ def process_news_df(path: str, save_path: str) -> None:
         df_news.topic.value_counts() > MIN_COUNT
     ].index
     df_news = df_news[df_news.topic.isin(topics_to_use)]
+    # убираем новости с html / js артефактами
     df_news = df_news[~df_news["text"].str.contains("\(function")]
     df_news[["title", "text", "topic", "date"]].to_csv(save_path)
 

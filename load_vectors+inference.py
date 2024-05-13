@@ -1,4 +1,3 @@
-from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.memory import ChatMessageHistory
@@ -10,6 +9,7 @@ from langchain_core.prompts.chat import (
     MessagesPlaceholder,
 )
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from qdrant_client import QdrantClient
 import langchain
 
@@ -63,6 +63,22 @@ def create_rag_chain(
         RunnableWithMessageHistory: conversational_rag_chain с которым и будет происодить основное взаимодействие
     """
 
+    contextualize_q_system_prompt = """<|begin_of_text|><|start_header_id|>system<|end_header_id|>\
+    Учитывая историю чата и последний вопрос пользователя \
+    которые могут ссылаться на контекст в истории чата, сформулируйте отдельный вопрос \
+    что можно понять без истории чата. НЕ отвечайте на вопрос,\
+    просто переформулируйте его, если необходимо, а в противном случае верните как есть.<|eot_id|>"""
+    contextualize_q_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", contextualize_q_system_prompt),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{input}"),
+        ]
+    )
+
+    history_aware_retriever = create_history_aware_retriever(
+        llm, db_retriever, contextualize_q_prompt
+    )
     qa_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", qa_sys_prompt),
@@ -72,7 +88,7 @@ def create_rag_chain(
     )
     question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 
-    rag_chain = create_retrieval_chain(db_retriever, question_answer_chain)
+    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
     conversational_rag_chain = RunnableWithMessageHistory(
         rag_chain,
@@ -100,11 +116,9 @@ def run_chat_boot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
             print("Сброс произошёл успешно!")
         else:
             print(
-                "Ответ:",
+                "Ответ:",  # <|start_header_id|>user<|end_header_id|><|eot_id|>
                 conversational_rag_chain.invoke(
-                    {
-                        "input": f"<|start_header_id|>user<|end_header_id|>{user_message}<|eot_id|>"
-                    },
+                    {"input": f"{user_message}"},
                     config={
                         "configurable": {"session_id": "abc123"}
                     },  # constructs a key "abc123" in `store`.
