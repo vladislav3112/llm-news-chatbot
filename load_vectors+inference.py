@@ -84,7 +84,7 @@ def create_rag_chain(
     return conversational_rag_chain
 
 
-def run_chat_boot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
+def run_chat_bot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
     global store
     store = {}
 
@@ -103,7 +103,8 @@ def run_chat_boot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
                 "Ответ:",
                 conversational_rag_chain.invoke(
                     {
-                        "input": f"<|start_header_id|>user<|end_header_id|>{user_message}<|eot_id|>"
+                        "input": f"<|start_header_id|>user<|end_header_id|>{user_message}<|eot_id|>",
+                        # "input": user_message,
                     },
                     config={
                         "configurable": {"session_id": "abc123"}
@@ -132,7 +133,6 @@ if __name__ == "__main__":
     Используйте следующие фрагменты полученного контекста, чтобы ответить на вопрос. \
     Если вы не знаете ответа, просто скажите, что не знаете. \
     Используйте максимум три предложения и будьте краткими.
-    Контекст:\
-    {context}<|eot_id|>"""
+    Context: {context}<|eot_id|>"""
 
-    run_chat_boot(llm, sys_prompt, db_retriever)
+    run_chat_bot(llm, sys_prompt, db_retriever)
