@@ -11,17 +11,18 @@ from langchain_core.prompts.chat import (
 )
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from qdrant_client import QdrantClient
-import langchain
+from dotenv import load_dotenv
+import os
 
-langchain.verbose = True
-langchain.debug = True
+load_dotenv()
+
+LLM_MODEL_PATH = os.getenv("LLM_MODEL_PATH")
+DB_PATH = os.getenv("DB_PATH")
 
 # load vectors + LLM:
-# model source: https://huggingface.co/IlyaGusev/saiga_llama3_8b_gguf
+# used model source: https://huggingface.co/IlyaGusev/saiga_llama3_8b_gguf
+# из-за формат prompts модели: <|start_header_id|>{role}<|end_header_id|>{message}
 
-
-LLM_MODEL_PATH = "G:/LLMs weights/model-q4_K.gguf"
-DB_PATH = "./local_qdrant_rubert_from_2012"
 store = {}
 
 
@@ -90,7 +91,7 @@ def run_chat_bot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
 
     conversational_rag_chain = create_rag_chain(llm, sys_prompt, db_retriever)
     while True:
-        print("Введите вопрос. Напишите quit или q чтобы выйти, r для перегенерации.")
+        print("Введите вопрос. Напишите quit или q чтобы выйти, r для сброса сессии.")
 
         user_message = input()
         if user_message == "q" or user_message == "quit":
@@ -104,7 +105,6 @@ def run_chat_bot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
                 conversational_rag_chain.invoke(
                     {
                         "input": f"<|start_header_id|>user<|end_header_id|>{user_message}<|eot_id|>",
-                        # "input": user_message,
                     },
                     config={
                         "configurable": {"session_id": "abc123"}
@@ -116,13 +116,13 @@ def run_chat_bot(llm: LlamaCpp, sys_prompt: str, db_retriever) -> None:
 if __name__ == "__main__":
 
     db_retriever = create_retriever(
-        db_path="./local_qdrant_rubert_from_2012",
+        db_path="./local_qdrant_rubert_from_2012_with_date",
         embeddings=HuggingFaceEmbeddings(model_name="cointegrated/rubert-tiny2"),
     )
 
     llm = LlamaCpp(
         model_path=LLM_MODEL_PATH,
-        temperature=0.7,
+        temperature=0.3,
         max_tokens=500,
         top_p=1,
         n_ctx=2048,

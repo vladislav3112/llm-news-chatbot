@@ -4,6 +4,8 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
+from dotenv import load_dotenv
+import os
 
 
 def save_data_to_vectordb(
@@ -18,7 +20,6 @@ def save_data_to_vectordb(
         db_save_path (str, optional): _description_. Путь, куда соханятся данные векторной базы данных.
         low_memory (bool, optional): _description_. Defaults to True. Флаг, >= 16GB RAM на устройстуе или нет.
     """
-    # setting if device free RAM ~ 16 GB
 
     df = pd.read_csv(df_path)
     if low_memory:
@@ -29,7 +30,7 @@ def save_data_to_vectordb(
 
     for item in tqdm(df.itertuples(), total=len(df)):
         page = Document(
-            page_content=item.text, metadata={"date": item.date, "topic": item.topic}
+            page_content=f"Дата новости:{item.date} {item.text}",
         )
         documents.append(page)
 
@@ -46,13 +47,18 @@ def save_data_to_vectordb(
             path=db_save_path,
             collection_name="my_news_collection",
         )
-        print("Информация успешно сохранена в базу данных по пути {db_path}")
+        print(f"Информация успешно сохранена в базу данных по пути {db_save_path}")
     except MemoryError:
         print("Недостаточно памяти! Освободите RAM или поставьте low_memory=True")
 
 
 if __name__ == "__main__":
+
+    load_dotenv()
+
+    DB_PATH = os.getenv("DB_PATH")
+    DF_PROCESSED_PATH = os.getenv("DF_PROCESSED_PATH")
     save_data_to_vectordb(
-        df_path="data/processed_news.csv",
-        db_save_path="./local_qdrant_rubert_from_2012",
+        df_path=DF_PROCESSED_PATH,
+        db_save_path=DB_PATH,
     )

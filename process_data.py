@@ -1,4 +1,6 @@
 import pandas as pd
+from dotenv import load_dotenv
+import os
 
 
 def process_news_df(path: str, save_path: str) -> None:
@@ -26,4 +28,7 @@ def process_news_df(path: str, save_path: str) -> None:
 
 
 if __name__ == "__main__":
-    process_news_df(path="lenta-ru-news.csv", save_path="data/processed_news.csv")
+
+    load_dotenv()
+    DF_PROCESSED_PATH = os.getenv("DF_PROCESSED_PATH")
+    process_news_df(path="lenta-ru-news.csv", save_path=DF_PROCESSED_PATH)

@@ -6,3 +6,5 @@ models
 *.csv
 local_qdrant_rubert_from_2012/*
 *test.ipynb
+.env
+local_qdrant_rubert_from_2012_with_date/*
