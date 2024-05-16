@@ -14,4 +14,4 @@
 
 2 Вариант:
 - Перейти в директорию /app
-- запустить ```docker image build -t chatbot:0.0.1 .``` и далее ```docker run chatbot:0.0.1```
+- запустить ```docker image build -t chatbot:0.0.1 .``` и далее ```docker run -it chatbot:0.0.1```
