@@ -1,3 +1,7 @@
+import os
+
+import langchain
+from dotenv import load_dotenv
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -5,15 +9,9 @@ from langchain.memory import ChatMessageHistory
 from langchain_community.llms import LlamaCpp
 from langchain_community.vectorstores import Qdrant
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.prompts.chat import (
-    ChatPromptTemplate,
-    MessagesPlaceholder,
-)
+from langchain_core.prompts.chat import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from qdrant_client import QdrantClient
-from dotenv import load_dotenv
-import os
-import langchain
 
 langchain.verbose = True
 langchain.debug = True

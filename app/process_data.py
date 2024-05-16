@@ -1,6 +1,7 @@
+import os
+
 import pandas as pd
 from dotenv import load_dotenv
-import os
 
 
 def process_news_df(path: str, save_path: str) -> None:

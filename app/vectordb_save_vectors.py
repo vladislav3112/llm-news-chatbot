@@ -1,11 +1,12 @@
+import os
+
 import pandas as pd
+from dotenv import load_dotenv
 from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
-from dotenv import load_dotenv
-import os
 
 
 def save_data_to_vectordb(
