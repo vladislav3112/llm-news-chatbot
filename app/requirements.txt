@@ -1,0 +1,11 @@
+python-dotenv==1.0.0
+pandas==2.2.2
+numpy==1.26.2
+tqdm==4.66.1
+sentence-transformers==2.2.2
+qdrant_client==1.9.1
+llama_cpp_python==0.2.73
+langchain==0.1.20
+langchain_community==0.0.38
+langchain_core==0.1.52
+langchain_text_splitters==0.0.1
