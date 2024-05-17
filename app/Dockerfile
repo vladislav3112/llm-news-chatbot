@@ -9,15 +9,14 @@ RUN mkdir -p ./data
 RUN wget -nc -P ./data https://github.com/yutkin/Lenta.Ru-News-Dataset/releases/download/v1.1/lenta-ru-news.csv.bz2
 RUN apt-get update
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-RUN apt-get install -y bzip2 && apt -y install locales  && locale-gen ru_RU.UTF-8
-RUN bzip2 -d ./data/lenta-ru-news.csv.bz2 
 
+RUN apt-get install -y bzip2 && apt -y install locales  && locale-gen ru_RU.UTF-8
+RUN apt-get install -y locales-all
 ENV LANG ru_RU.UTF-8
 ENV LANGUAGE ru_RU:ru
 ENV LC_ALL ru_RU.UTF-8
+
+RUN bzip2 -d ./data/lenta-ru-news.csv.bz2 
 
 RUN pip install -r requirements.txt
 RUN python3 ./process_data.py
